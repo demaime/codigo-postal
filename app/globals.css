@@ -59,45 +59,17 @@
 .scroll-container::-webkit-scrollbar-thumb:hover {
   background: #555; /* Color on hover */
 }
-.bg-gradient {
-  background: linear-gradient(234deg, #121d49, #000000, #2c2d31);
-  background-size: 600% 600%;
 
-  -webkit-animation: bg-gradient 14s ease infinite;
-  -moz-animation: bg-gradient 14s ease infinite;
-  animation: bg-gradient 14s ease infinite;
+.card-gradient-bg {
+  background: #141b40;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 27, 64, 1) 0%,
+    rgba(112, 60, 20, 0.63) 48%,
+    rgba(112, 60, 20, 1) 100%
+  );
 }
 
-@-webkit-keyframes bg-gradient {
-  0% {
-    background-position: 60% 0%;
-  }
-  50% {
-    background-position: 41% 100%;
-  }
-  100% {
-    background-position: 60% 0%;
-  }
-}
-@-moz-keyframes bg-gradient {
-  0% {
-    background-position: 60% 0%;
-  }
-  50% {
-    background-position: 41% 100%;
-  }
-  100% {
-    background-position: 60% 0%;
-  }
-}
-@keyframes bg-gradient {
-  0% {
-    background-position: 60% 0%;
-  }
-  50% {
-    background-position: 41% 100%;
-  }
-  100% {
-    background-position: 60% 0%;
-  }
+.card-shadow {
+  box-shadow: outset 5px gold;
 }

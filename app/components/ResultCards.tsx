@@ -1,62 +1,81 @@
 import { ApiResponseData } from "../types";
 import { AnimatePresence, motion } from "motion/react";
 import { Map, Marker } from "pigeon-maps";
-import { osm } from "pigeon-maps/providers";
-
+import { handleCopy } from "../hooks/handleCopy";
+import { MdFileCopy } from "react-icons/md";
+import { ToastContainer } from "react-toastify";
 interface ResultCardsProps {
   results: ApiResponseData[];
 }
 
 export default function ResultCards({ results }: ResultCardsProps) {
-  console.log({
-    lat: parseFloat(results[0].lat),
-    lon: parseFloat(results[0].lon),
-  });
   return (
     <div className="w-full max-w-5xl text-white">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 max-h-82 overflow-y-scroll scroll-container pr-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 max-h-96 overflow-y-scroll scroll-container p-8">
         {results.map((location) => (
           <AnimatePresence key={location.place_id}>
             <motion.div
+              onClick={() => handleCopy(location.address.postcode)}
               initial={{ opacity: 0, y: 3 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ ease: "easeOut", duration: 0.3 }}
+              transition={{ ease: "easeIn", duration: 0.3 }}
               exit={{ opacity: 0 }}
-              className="flex min-h-48 flex-col items-center justify-evenly rounded border border-slate-600 p-2 text-center shadow-orange-200 transition-all duration-200 hover:border-orange-400 hover:bg-orange-100/10 cursor-copy hover:shadow-md"
+              whileHover={{
+                scale: 1.02,
+                transition: { duration: 0.1, delay: 0 },
+              }}
+              className="relative group flex min-h-48 flex-col items-center justify-evenly rounded-lg py-2 px-4 card-gradient-bg cursor-copy card-shadow"
             >
-              <div className="flex text-sm w-full text-gray-300 gap-2 justify-between px-4">
-                <p>{location.address.country}</p>
-                <p className="font-semibold">
-                  {location.address.state || location.address.state_district}
-                </p>
+              {location.address.postcode ? (
+                <div className="w-full text- font-black tracker-wider text-5xl flex items-center justify-start pb-2 ">
+                  {location.address.postcode}{" "}
+                </div>
+              ) : (
+                <div className="w-full text-amber-100 font-semibold tracker-wider text-md flex items-center justify-center pb-2">
+                  No se informa el <br />
+                  Código Postal :(
+                </div>
+              )}
+              <ToastContainer />
+              <div className="flex flex-col items-center justify-center absolute top-4 right-4 h-12 opacity-0 transiton-all duration-100 group-hover:opacity-80">
+                <MdFileCopy className="h-6 w-6 text-orange-200" />
+                <p className="text-orannge-300 text-xs">Copiar</p>
               </div>
-              <div className="w-full h-12 text-orange-50 font-black tracker-wider text-xl flex items-center justify-center">
+
+              <h1 className="font-sembold text-md text-amber-400 w-full text-start">
+                {location.address.state || location.address.state_district}
+              </h1>
+
+              <div className="w-full h-12 text-white font-bold tracker-wider text-xl flex items-center justify-center">
                 {location.address.city ||
                   location.address.town ||
                   location.address.suburb ||
                   location.address.village ||
                   location.address.neighbourhood}
               </div>
-              <div className="w-full text-blue-50 font-black tracker-wider text-5xl flex items-center justify-center pb-2 ">
-                {location.address.postcode}
+              <div className="rounded-2xl overflow-hidden h-[200px] w-full">
+                <Map
+                  animate={true}
+                  defaultCenter={[
+                    parseFloat(location.lat),
+                    parseFloat(location.lon),
+                  ]}
+                  defaultZoom={16}
+                  mouseEvents={false}
+
+                  // maxZoom={16}
+                  // minZoom={16}
+                >
+                  <Marker
+                    width={50}
+                    anchor={[
+                      parseFloat(location.lat),
+                      parseFloat(location.lon),
+                    ]}
+                    color={"orange"}
+                  />
+                </Map>
               </div>
-              <Map
-                animate={true}
-                height={200}
-                defaultCenter={[
-                  parseFloat(location.lat),
-                  parseFloat(location.lon),
-                ]}
-                defaultZoom={16}
-                maxZoom={16}
-                minZoom={16}
-              >
-                <Marker
-                  width={50}
-                  anchor={[parseFloat(location.lat), parseFloat(location.lon)]}
-                  color={"orange"}
-                />
-              </Map>
             </motion.div>
           </AnimatePresence>
         ))}
@@ -64,91 +83,3 @@ export default function ResultCards({ results }: ResultCardsProps) {
     </div>
   );
 }
-
-// <AnimatePresence key={location.place_id}>
-//             <motion.div
-//               initial={{ opacity: 0, y: 3 }}
-//               animate={{ opacity: 1, y: 0 }}
-//               transition={{ ease: "easeOut", duration: 0.3 }}
-//               exit={{ opacity: 0 }}
-//               className="flex min-h-48 flex-col items-center justify-evenly rounded border border-slate-600 px-6 py-4 text-center shadow-orange-200 transition-all duration-200 hover:border-orange-300 hover:bg-orange-100/10 hover:shadow-md"
-//             >
-//               <p className="text-xs text-gray-400">
-//                 {location.address.country}
-//               </p>
-//               <p className="text-md text-gray-200">
-//                 {location.address.state || location.address.state_district}
-//               </p>
-//               <h2 className="text-lg font-bold text-orange-500">
-//                 {location.address.city ||
-//                   location.address.town ||
-//                   location.address.suburb ||
-//                   location.address.village ||
-//                   location.address.neighbourhood}
-//               </h2>
-//               <Map
-//                 animate={true}
-//                 height={200}
-//                 defaultCenter={[
-//                   parseFloat(location.lat),
-//                   parseFloat(location.lon),
-//                 ]}
-//                 defaultZoom={16}
-//                 maxZoom={16}
-//                 minZoom={16}
-//               >
-//                 <Marker
-//                   width={50}
-//                   anchor={[parseFloat(location.lat), parseFloat(location.lon)]}
-//                   color={"orange"}
-//                 />
-//               </Map>
-//               <div className="flex justify-center w-full font-semibold">
-//                 <span className="text-orange-500 mr-2">CP:</span>
-//                 <p className="text-yellow-400">{location.address.postcode}</p>
-//               </div>
-//             </motion.div>
-//           </AnimatePresence><AnimatePresence key={location.place_id}>
-//             <motion.div
-//               initial={{ opacity: 0, y: 3 }}
-//               animate={{ opacity: 1, y: 0 }}
-//               transition={{ ease: "easeOut", duration: 0.3 }}
-//               exit={{ opacity: 0 }}
-//               className="flex min-h-48 flex-col items-center justify-evenly rounded border border-slate-600 px-6 py-4 text-center shadow-orange-200 transition-all duration-200 hover:border-orange-300 hover:bg-orange-100/10 hover:shadow-md"
-//             >
-//               <p className="text-xs text-gray-400">
-//                 {location.address.country}
-//               </p>
-//               <p className="text-md text-gray-200">
-//                 {location.address.state || location.address.state_district}
-//               </p>
-//               <h2 className="text-lg font-bold text-orange-500">
-//                 {location.address.city ||
-//                   location.address.town ||
-//                   location.address.suburb ||
-//                   location.address.village ||
-//                   location.address.neighbourhood}
-//               </h2>
-//               <Map
-//                 animate={true}
-//                 height={200}
-//                 defaultCenter={[
-//                   parseFloat(location.lat),
-//                   parseFloat(location.lon),
-//                 ]}
-//                 defaultZoom={16}
-//                 maxZoom={16}
-//                 minZoom={16}
-//               >
-//                 <Marker
-//                   width={50}
-//                   anchor={[parseFloat(location.lat), parseFloat(location.lon)]}
-//                   color={"orange"}
-//                 />
-//               </Map>
-//               <div className="flex justify-center w-full font-semibold">
-//                 <span className="text-orange-500 mr-2">CP:</span>
-//                 <p className="text-yellow-400">{location.address.postcode}</p>
-//               </div>
-//             </motion.div>
-//           </AnimatePresence>
