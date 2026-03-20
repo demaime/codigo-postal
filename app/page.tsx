@@ -51,10 +51,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen max-w-full overflow-hidden bg-[#1d2449]">
+    <div className="h-dvh max-w-full overflow-hidden bg-[#1d2449]">
       <Birds />
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-8 px-4 py-8 sm:gap-10 sm:px-6 sm:py-10 lg:gap-12 lg:px-12 lg:py-12">
-        <div className="flex w-full flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-center gap-8 px-4 py-8 sm:gap-10 sm:px-6 sm:py-10 lg:gap-12 lg:px-12 lg:py-12">
+        <div className="flex w-full items-center justify-center gap-3 sm:flex-row sm:gap-4">
           <motion.div
             animate={{ opacity: 1 }}
             initial={{ opacity: 0 }}
@@ -133,7 +133,9 @@ export default function Home() {
 
         {isLoading ? <div className="loader mt-24" /> : null}
         {!isLoading && results && results.length > 0 ? (
-          <ResultCards results={results} />
+          <div className="w-full flex-1 min-h-0">
+            <ResultCards results={results} />
+          </div>
         ) : null}
       </div>
     </div>

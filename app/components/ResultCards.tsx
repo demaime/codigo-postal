@@ -10,8 +10,8 @@ interface ResultCardsProps {
 
 export default function ResultCards({ results }: ResultCardsProps) {
   return (
-    <div className="w-full max-w-5xl text-white">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 max-h-96 overflow-y-scroll scroll-container p-8">
+    <div className="h-full w-full min-h-0 text-white">
+      <div className="grid h-full min-h-0 grid-cols-1 gap-4 overflow-y-auto scroll-container p-4 sm:grid-cols-2 sm:p-6 lg:grid-cols-3 lg:p-8">
         {results.map((location) => (
           <AnimatePresence key={location.place_id}>
             <motion.div
@@ -24,7 +24,7 @@ export default function ResultCards({ results }: ResultCardsProps) {
                 scale: 1.02,
                 transition: { duration: 0.1, delay: 0 },
               }}
-              className="relative group flex min-h-48 flex-col items-center justify-evenly rounded-lg py-2 px-4 card-gradient-bg cursor-copy card-shadow"
+              className="relative group flex min-h-[360px] flex-col items-center justify-evenly rounded-lg px-4 py-2 card-gradient-bg cursor-copy card-shadow"
             >
               {location.address.postcode ? (
                 <div className="w-full text- font-black tracker-wider text-5xl flex items-center justify-start pb-2 ">

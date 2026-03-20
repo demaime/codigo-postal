@@ -13,7 +13,6 @@
   width: 88px;
   height: 125px;
   will-change: background-position;
-
   animation-name: fly-cycle;
   animation-timing-function: steps(10);
   animation-iteration-count: infinite;
@@ -38,7 +37,6 @@
 
 .bird-container {
   position: absolute;
-  top: 10%;
   left: -3%;
   transform: scale(0);
   will-change: transform;
