@@ -3,28 +3,51 @@ import Image from "next/image";
 import "./styles/birds.css";
 import { useRef, useState } from "react";
 import axios from "axios";
-import ResultCards from "./components/ResultCards";
-import { ApiResponseData } from "./types";
+import ResultCards from "./components/ResultCards copy";
+import { ApiResponseData, DataWithDistance } from "./types";
 import { motion } from "motion/react";
 import Birds from "./components/Birds";
+import { getGeoDistance } from "./helpers/getGeoDistance";
+import { UserLocation } from "./types";
+import Title from "./components/Title";
 
 export default function Home() {
-  const codigo = "CODIGO";
-  const postal = "POSTAL";
   const inputRef = useRef<HTMLInputElement>(null);
   const [results, setResults] = useState<ApiResponseData[] | null>(null);
+  const [userLocation, setUserLocation] = useState<UserLocation>({
+    userLat: 0,
+    userLon: 0,
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   async function getLocationData(inputSearchValue: string) {
     const url = `https://nominatim.openstreetmap.org/search?q=${inputSearchValue}&addressdetails=1&format=json&limit=20`;
+
     try {
       setIsLoading(true);
-      const response = await axios.get(url);
-      setResults(
-        response.data.filter(
-          (result: ApiResponseData) => result.address.country === "Argentina",
-        ),
-      );
+      const response = await axios.get<ApiResponseData[]>(url);
+      navigator.geolocation.getCurrentPosition((userPosition) => {
+        setUserLocation({
+          userLat: userPosition.coords.latitude,
+          userLon: userPosition.coords.longitude,
+        });
+      });
+      const filteredResult: DataWithDistance[] = response.data
+        .filter((location) => location.address.country === "Argentina")
+        .map((location) => {
+          const newLocation = location as DataWithDistance;
+          newLocation.distance = getGeoDistance(
+            parseFloat(newLocation.lat),
+            parseFloat(newLocation.lon),
+            userLocation.userLat,
+            userLocation.userLon,
+          );
+          return newLocation;
+        })
+        .sort((a, b) => a.distance - b.distance);
+
+      setResults(filteredResult);
+      console.log(results);
     } catch (error) {
       console.log(error);
     } finally {
@@ -32,16 +55,11 @@ export default function Home() {
     }
   }
 
-  // const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-  //   event.preventDefault;
-  //   getLocationData(inputRef.current?.value || "");
-  // };
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.05 }, // Delays each letter by 0.05s
+      transition: { staggerChildren: 0.05 },
     },
   };
 
@@ -50,58 +68,13 @@ export default function Home() {
     visible: { opacity: 1, y: 0 },
   };
 
+  console.log(results);
+
   return (
     <div className="h-dvh max-w-full overflow-hidden bg-[#1d2449]">
       <Birds />
       <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-center gap-8 px-4 py-8 sm:gap-10 sm:px-6 sm:py-10 lg:gap-12 lg:px-12 lg:py-12">
-        <div className="flex w-full items-center justify-center gap-3 sm:flex-row sm:gap-4">
-          <motion.div
-            animate={{ opacity: 1 }}
-            initial={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <Image
-              src="/logo.png"
-              alt="logo"
-              width={200}
-              height={200}
-              className="h-auto w-24 sm:w-28 lg:w-36"
-              priority
-            />
-          </motion.div>
-          <div className="text-center text-3xl font-black tracking-tight text-amber-100 sm:text-4xl lg:text-6xl">
-            <motion.h1
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {codigo.split("").map((char, index) => (
-                <motion.span
-                  key={index}
-                  variants={letterVariants}
-                  style={{ display: "inline-block" }}
-                >
-                  {char}
-                </motion.span>
-              ))}
-            </motion.h1>
-            <motion.h1
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {postal.split("").map((char, index) => (
-                <motion.span
-                  key={index}
-                  variants={letterVariants}
-                  style={{ display: "inline-block" }}
-                >
-                  {char}
-                </motion.span>
-              ))}
-            </motion.h1>
-          </div>
-        </div>
+        <Title />
 
         <form
           className="flex w-full flex-col items-center justify-center gap-4 sm:gap-6"
