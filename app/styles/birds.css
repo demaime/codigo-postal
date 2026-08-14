@@ -1,3 +1,10 @@
+/* Bandada de fondo, tal cual el original: sprite negro invertido a blanco,
+   los cuatro contenedores en `fly-right-one`, mismas duraciones y demoras,
+   sin opacidad. Lo único que cambia respecto de la versión inicial es que el
+   sprite se auto-hospeda en /public en vez de hotlinkear S3 de CodePen.
+   El archivo se llama `bird-cells.svg` (y no `birds.svg`) para que ningún
+   navegador sirva desde caché una versión anterior del mismo archivo. */
+
 .birds-layer {
   position: fixed;
   inset: 0;
@@ -7,7 +14,7 @@
 }
 
 .bird {
-  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/174479/bird-cells-new.svg");
+  background-image: url("/bird-cells.svg");
   filter: invert(100%);
   background-size: auto 100%;
   width: 88px;
@@ -38,6 +45,12 @@
 .bird-container {
   position: absolute;
   left: -3%;
+  /* A media altura de la pantalla, para que crucen por detrás del logo.
+     El -62.5px es la mitad del alto del sprite (la escala del keyframe no
+     mueve el centro), y el -2vh compensa el cabeceo de 0 a 4vh del vuelo,
+     así el recorrido queda repartido alrededor del centro. */
+  top: calc(50% - 2vh);
+  margin-top: -62.5px;
   transform: scale(0);
   will-change: transform;
   animation-name: fly-right-one;
@@ -47,7 +60,7 @@
 
 .bird-container-one {
   animation-duration: 15s;
-  animation-delay: 0;
+  animation-delay: 0s;
 }
 
 .bird-container-two {
@@ -64,11 +77,7 @@
   animation-duration: 16s;
   animation-delay: 10.25s;
 }
-/* @keyframes fly-cycle {
-    100%{
-        background-position: -3600px 0;
-    }
-} */
+
 @keyframes fly-cycle {
   100% {
     background-position: -900px 0;
@@ -109,36 +118,10 @@
   }
 }
 
-@keyframes fly-right-two {
-  0% {
-    transform: translateY(-2vh) translateX(-10vw) scale(0.5);
-  }
-
-  10% {
-    transform: translateY(0vh) translateX(10vw) scale(0.4);
-  }
-
-  20% {
-    transform: translateY(-4vh) translateX(30vw) scale(0.6);
-  }
-
-  30% {
-    transform: translateY(1vh) translateX(50vw) scale(0.45);
-  }
-
-  40% {
-    transform: translateY(-2.5vh) translateX(70vw) scale(0.5);
-  }
-
-  50% {
-    transform: translateY(0vh) translateX(90vw) scale(0.45);
-  }
-
-  51% {
-    transform: translateY(0vh) translateX(110vw) scale(0.45);
-  }
-
-  100% {
-    transform: translateY(0vh) translateX(110vw) scale(0.45);
+/* Con movimiento reducido la bandada no se congela a mitad de vuelo:
+   directamente no aparece. */
+@media (prefers-reduced-motion: reduce) {
+  .birds-layer {
+    display: none;
   }
 }

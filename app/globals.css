@@ -1,75 +1,154 @@
 @import "tailwindcss";
-.loader {
-  width: 48px;
-  height: 48px;
-  border: 5px solid #fff;
-  border-bottom-color: #ff3d00;
-  border-radius: 50%;
-  display: inline-block;
-  box-sizing: border-box;
-  animation: rotation 1s linear infinite;
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   La paleta nace de la paloma: el navy del fondo original, el naranja del pico
+   y las patas, y el crema del sobre que lleva en el pico.
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-ink-950: #0b1030; /* fondo de página */
+  --color-ink-900: #131a3d; /* superficie elevada */
+  --color-ink-850: #171f47; /* superficie hover */
+  --color-ink-800: #1d2449; /* el navy original del proyecto */
+  --color-ink-700: #2a3468; /* borde sutil */
+  --color-ink-600: #2c3670; /* borde definido */
+
+  --color-mist-500: #8b94bd; /* texto terciario / iconos apagados */
+  --color-mist-300: #a6adcd; /* texto secundario */
+  --color-mist-50: #eef0fa; /* texto primario */
+
+  /* Naranja del pico, un punto menos saturado que el original: sobre navy, el
+     #f97316 puro vibraba de más en tipografía grande. */
+  --color-beak-600: #dc7128; /* acento presionado */
+  --color-beak-500: #ee843c; /* acento */
+  --color-beak-300: #f5ab74; /* acento suave */
+  --color-envelope: #f7ecd8; /* crema del sobre */
+
+  --font-display: var(--font-kanit), ui-sans-serif, system-ui, sans-serif;
 }
 
-@keyframes rotation {
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    /* La trama es pigmento NEGRO al 14% de opacidad: sobre el casi-negro
+       ink-950 no se percibe. Va sobre el navy de marca, que es donde registra
+       — igual que la referencia original, que la ponía sobre un azul vivo.
+       El PNG (205 bytes) se auto-hospeda en vez de traerse de un tercero. */
+    background-color: var(--color-ink-800);
+    background-image: url("/texture.png");
+    background-repeat: repeat;
+    color: var(--color-mist-50);
+  }
+
+  ::selection {
+    background-color: var(--color-beak-500);
+    color: #fff;
+  }
+
+  /* Tailwind v4 cambió el default de los botones a `cursor: default`. En una
+     app que es casi toda botones eso se siente rota: se restaura el puntero
+     acá una sola vez, en vez de repetir `cursor-pointer` en cada componente. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Un solo anillo de foco para toda la app: nada queda sin indicador. */
+  :focus-visible {
+    outline: 2px solid var(--color-beak-500);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-ink-600);
+    border-radius: 999px;
+    border: 2px solid var(--color-ink-800);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-mist-500);
+  }
+}
+
+@layer components {
+  /* Los códigos postales se comparan entre sí en una lista: necesitan ancho
+     de dígito fijo para no bailar. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Atribución de OpenStreetMap: obligatoria por ODbL. Antes estaba oculta con
+     opacity: 0. Ahora se integra al diseño en vez de desaparecer. */
+  .pigeon-attribution {
+    background: rgba(11, 16, 48, 0.75) !important;
+    color: var(--color-mist-500) !important;
+    font-size: 9px !important;
+    line-height: 1.4 !important;
+    padding: 2px 6px !important;
+    border-radius: 6px 0 0 0 !important;
+  }
+  .pigeon-attribution a {
+    color: var(--color-mist-300) !important;
+    text-decoration: none;
+  }
+  .pigeon-attribution a:hover {
+    text-decoration: underline;
+  }
+
+  /* Offset naranja detrás del wordmark. Son cuatro sombras encadenadas y no
+     una sola: apiladas forman un bloque macizo —una extrusión— en vez de un
+     fantasma flotando detrás de las letras, que es lo que da la profundidad.
+     Todo en `em` para que escale igual en mobile que en desktop. */
+  .wordmark-offset {
+    text-shadow:
+      0.02em 0.02em 0 var(--color-beak-500),
+      0.04em 0.04em 0 var(--color-beak-500),
+      0.06em 0.06em 0 var(--color-beak-500),
+      0.08em 0.08em 0 var(--color-beak-600);
+  }
+
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-ink-900) 0%,
+      var(--color-ink-800) 40%,
+      var(--color-ink-900) 80%
+    );
+    background-size: 300% 100%;
+    animation: skeleton-sweep 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes skeleton-sweep {
   0% {
-    transform: rotate(0deg);
+    background-position: 150% 0;
   }
   100% {
-    transform: rotate(360deg);
-  }
-}
-.loader {
-  width: 48px;
-  height: 48px;
-  border: 5px solid #fff;
-  border-bottom-color: #ff3d00;
-  border-radius: 50%;
-  display: inline-block;
-  box-sizing: border-box;
-  animation: rotation 1s linear infinite;
-}
-
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
+    background-position: -150% 0;
   }
 }
 
-.pigeon-attribution {
-  opacity: 0 !important;
-}
-
-.scroll-container::-webkit-scrollbar {
-  width: 5px;
-}
-
-.scroll-container::-webkit-scrollbar-track {
-  background: #252525; /* Color of the track */
-  border-radius: 10px;
-}
-
-.scroll-container::-webkit-scrollbar-thumb {
-  background: #ff6601; /* Color of the thumb */
-  border-radius: 10px; /* Rounded corners */
-}
-
-.scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color on hover */
-}
-
-.card-gradient-bg {
-  background: #141b40;
-  background: linear-gradient(
-    180deg,
-    rgba(20, 27, 64, 1) 0%,
-    rgba(112, 60, 20, 0.63) 48%,
-    rgba(112, 60, 20, 1) 100%
-  );
-}
-
-.card-shadow {
-  box-shadow: outset 5px gold;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
